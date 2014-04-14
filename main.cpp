@@ -2,12 +2,28 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <iostream>
 #include <cv.h>
+#include "Tomada.h"
+#include <fstream>
 
 using namespace cv;
 using namespace std;
 
+vector<Tomada> getFilmInTomadas(string filmPath,string filmName);
+
 int main( int argc, char** argv )
 {
+    string filmPath = "c:/Users/Omar/Documents/FMI Resources/";
+    string filmName = "hachiko";
+    vector<Tomada> tomadaVector;
+    tomadaVector = getFilmInTomadas(filmPath,filmName);
+    /* -- Imprimir vecto
+        cout << "myvector contains:";
+        vector<Tomada>::iterator it;
+        for (it=tomadaVector.begin(); it<tomadaVector.end(); it++)
+            cout << ' ' << *it<< '\n';
+
+        cout << "Numero de tomadas: "<<tomadaVector.size()<<"\n";
+    */
     Mat image;
     image = imread("e:/Mestrado/FMI/code/lena_std.tif", CV_LOAD_IMAGE_COLOR);   // Read the file
 
@@ -20,4 +36,32 @@ int main( int argc, char** argv )
     imshow( "Display window", image );                   // Show our image inside it.
     waitKey(0);                                          // Wait for a keystroke in the window
     return 0;
+}
+
+vector<Tomada> getFilmInTomadas(string filmPath,string filmName)
+{
+    vector<Tomada> tomadaVector;
+    string inFile = filmPath+filmName+"/"+filmName+".in";
+    ifstream myReadFile;
+    myReadFile.open(inFile.c_str());
+    string word;
+    Tomada* tomadaTmp;
+    if (myReadFile.is_open())
+    {
+        while (!myReadFile.eof())
+        {
+            Tomada tomada;
+            myReadFile >> word;
+            tomada.setPathTomada(filmPath+filmName+"/"+filmName+"/"+word);
+            tomada.setNumTomada(atoi(word.substr(7).c_str()));
+            myReadFile >> word;
+            tomada.setInitQuadro(atoi(word.c_str()));
+            myReadFile >> word;
+            tomada.setEndQuadro(atoi(word.c_str()));
+            tomadaVector.push_back(tomada);
+        }
+    }
+    myReadFile.close();
+
+    return tomadaVector;
 }
