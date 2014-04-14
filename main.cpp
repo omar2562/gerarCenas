@@ -4,11 +4,14 @@
 #include <cv.h>
 #include "Tomada.h"
 #include <fstream>
+#include <math.h>
 
 using namespace cv;
 using namespace std;
 
 vector<Tomada> getFilmInTomadas(string filmPath,string filmName);
+void findQuadroClaveForVector(vector<Tomada>& tomadaVector);
+void findQuadroClave(vector<Tomada>::iterator& tomada);
 
 int main( int argc, char** argv )
 {
@@ -16,6 +19,7 @@ int main( int argc, char** argv )
     string filmName = "hachiko";
     vector<Tomada> tomadaVector;
     tomadaVector = getFilmInTomadas(filmPath,filmName);
+    findQuadroClaveForVector(tomadaVector);
     /* -- Imprimir vecto
         cout << "myvector contains:";
         vector<Tomada>::iterator it;
@@ -58,10 +62,26 @@ vector<Tomada> getFilmInTomadas(string filmPath,string filmName)
             tomada.setInitQuadro(atoi(word.c_str()));
             myReadFile >> word;
             tomada.setEndQuadro(atoi(word.c_str()));
+            //tomada.addQuadroChave(6);
             tomadaVector.push_back(tomada);
         }
     }
     myReadFile.close();
 
     return tomadaVector;
+}
+
+void findQuadroClaveForVector(vector<Tomada>& tomadaVector)
+{
+    vector<Tomada>::iterator it;
+    for (it=tomadaVector.begin(); it<tomadaVector.end(); it++)
+    {
+        findQuadroClave(it);
+    }
+}
+void findQuadroClave(vector<Tomada>::iterator& tomada)
+{
+    tomada->addQuadroChave(tomada->getInitQuadro());
+    tomada->addQuadroChave((tomada->getInitQuadro()+tomada->getEndQuadro())/2);
+    tomada->addQuadroChave(tomada->getEndQuadro());
 }

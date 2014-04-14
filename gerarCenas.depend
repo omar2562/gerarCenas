@@ -1,11 +1,12 @@
 # depslib dependency file v1.0
-1397507612 source:e:\mestrado\fmi\projeto\gerarcenas\main.cpp
+1397515558 source:e:\mestrado\fmi\projeto\gerarcenas\main.cpp
 	<opencv2/core/core.hpp>
 	<opencv2/highgui/highgui.hpp>
 	<iostream>
 	<cv.h>
 	"Tomada.h"
 	<fstream>
+	<math.h>
 
 1387529397 c:\opencv\build\include\opencv2\core\core.hpp
 	"opencv2/core/types_c.h"
@@ -383,9 +384,10 @@
 	"opencv2/core/core_c.h"
 	"opencv2/core/core.hpp"
 
-1397505606 e:\mestrado\fmi\projeto\gerarcenas\include\tomada.h
+1397516246 e:\mestrado\fmi\projeto\gerarcenas\include\tomada.h
 	<iostream>
+	<vector>
 
-1397506438 source:e:\mestrado\fmi\projeto\gerarcenas\src\tomada.cpp
+1397511306 source:e:\mestrado\fmi\projeto\gerarcenas\src\tomada.cpp
 	"Tomada.h"
 

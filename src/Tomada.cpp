@@ -11,5 +11,5 @@ Tomada::~Tomada()
 }
 
 ostream& operator<<(ostream &strm, const Tomada &tomada) {
-  return strm << "Tomada(" << tomada.numTomada <<":"<< tomada.initQuadro<<","<< tomada.endQuadro<<")";
+  return strm << "Tomada(" << tomada.quadroClaveVector.size() <<":"<< tomada.initQuadro<<","<< tomada.endQuadro<<")";
 }
