@@ -109,8 +109,10 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="include/Cena.h" />
 		<Unit filename="include/Tomada.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="src/Cena.cpp" />
 		<Unit filename="src/Tomada.cpp" />
 		<Extensions>
 			<code_completion />

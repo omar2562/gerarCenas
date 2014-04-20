@@ -1,9 +1,11 @@
 #ifndef TOMADA_H
 #define TOMADA_H
+#include <cv.h>
 #include <iostream>
 #include <vector>
 
 using namespace std;
+using namespace cv;
 
 class Tomada
 {
@@ -42,15 +44,15 @@ public:
     {
         pathTomada = val;
     }
-    vector<int> getQuadroClaveVector()
+    vector<Mat> getQuadroClaveVector()
     {
         return quadroClaveVector;
     }
-    void addQuadroChave(int quadro)
+    void addQuadroChave(Mat quadro)
     {
         quadroClaveVector.push_back(quadro);
     }
-    void setQuadroClaveVector(vector<int>& vec)
+    void setQuadroClaveVector(vector<Mat>& vec)
     {
         quadroClaveVector = vec;
     }
@@ -60,7 +62,7 @@ private:
     int endQuadro;
     int numTomada;
     string pathTomada;
-    vector<int> quadroClaveVector;
+    vector<Mat> quadroClaveVector;
     friend ostream& operator<<(ostream &strm, const Tomada &tomada);
 };
 
