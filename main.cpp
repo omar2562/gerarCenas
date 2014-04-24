@@ -2,17 +2,26 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <iostream>
 #include <cv.h>
+
 #include "Tomada.h"
 #include "Cena.h"
+#include "readFil.h"
+#include "cuadKey.h"
 #include <fstream>
 #include <math.h>
-#inlcude <stdlib.h>
+#include <dirent.h>
 
 using namespace cv;
 using namespace std;
 
 #define NUM_TOMADA_CHECK 3
 #define DIF_MAX 1.0
+//valores segun paper de thiago , falta experimentar
+#define hue 180
+#define sat 256
+#define bins_hue 8
+#define bins_sat 4
+
 
 vector<Tomada> getFilmInTomadas(string filmPath,string filmName);
 void findQuadroClaveForVector(vector<Tomada>& tomadaVector);
@@ -22,32 +31,83 @@ vector<Mat> getVectorForQuadro(string quadroPath);
 
 int main( int argc, char** argv )
 {
-    string filmPath = "c:/Users/Omar/Documents/FMI Resources/";
-    string filmName = "hachiko";
-    vector<Tomada> tomadaVector;
-    tomadaVector = getFilmInTomadas(filmPath,filmName);
-    findQuadroClaveForVector(tomadaVector);
-    vector<Cena> cenaVector;
-    cenaVector=generateCenas(tomadaVector);
-    ///* -- Imprimir vecto
-    //cout << "myvector contains:\n";
-    vector<Cena>::iterator it;
-    for (it=cenaVector.begin(); it<cenaVector.end(); it++)
-        cout << ' ' << *it<< '\n';
 
+    readFil varfile;
+
+    vector<string> mainDir;
+
+    string direcname="/home/edson/Documentos/postgradacao/Fundamentos de Sistemas Multimídia (1º bimestre)/video/pirates2";
+
+    //vector de vector  de directorios
+    vector<vector<string> > dirmatrix(3000000,vector<string>());
+    //lectura de directorio inicial
+    varfile.readAllFil(direcname);
+
+    mainDir=varfile.getNameTomada();
+
+
+
+    //leer imagenes del directorio
+    for(int y=0; y<mainDir.size(); y++)
+    {
+        varfile.readAllFil(direcname+"/"+mainDir[y]);
+
+        dirmatrix[y]=varfile.getNameTomada();
+
+    }
+
+
+
+    //obtener imagenes clavves o representativas
+
+    cv::Mat imageBase;
+    cv::Mat test;
+    imageBase=imread("imagen1.jpg");
+    test=imread("imagentest.jpg");
+
+    cuadKey datapr;
+    datapr.compHist(imageBase,test,hue,bins_hue,sat,bins_sat);
+
+
+
+    /*  string filmPath = "/home/edson/Documentos/postgradacao/Fundamentos de Sistemas Multimídia (1º bimestre)/video/";
+      string filmName = "pirates2";
+      vector<Tomada> tomadaVector;
+      tomadaVector = getFilmInTomadas(filmPath,filmName);
+      cout<<"pasee 1"<<endl;
+      findQuadroClaveForVector(tomadaVector);
+      cout<<"pasee 2"<<endl;
+      vector<Cena> cenaVector;
+
+      cenaVector=generateCenas(tomadaVector);
+      cout<<"pasee 3"<<endl;
+      // -- Imprimir vecto
+      //cout << "myvector contains:\n";
+      vector<Cena>::iterator it;
+      for (it=cenaVector.begin(); it<cenaVector.end(); it++)
+          cout << ' ' << *it<< '\n';
+    */
     //cout << "Numero de cenas: "<<cenaVector.size()<<"\n";
     //*/
-    Mat image;
-    image = imread("e:/Mestrado/FMI/code/lena_std.tif", CV_LOAD_IMAGE_COLOR);   // Read the file
+    /*
+        Mat image;
+        image = imread("/home/edson/Documentos/postgradacao/Fundamentos de Sistemas Multimídia (1º bimestre)/video/lena.jpg", CV_LOAD_IMAGE_COLOR);   // Read the file
 
-    if(! image.data )                              // Check for invalid input
-    {
-        cout <<  "Could not open or find the image" << std::endl ;
-        return -1;
-    }
-    namedWindow( "Display window", WINDOW_AUTOSIZE );// Create a window for display.
-    imshow( "Display window", image );                   // Show our image inside it.
-    //waitKey(0);                                          // Wait for a keystroke in the window
+        if(! image.data )                              // Check for invalid input
+        {
+            cout <<  "Could not open or find the image" << std::endl ;
+            return -1;
+        }
+        namedWindow( "Display window", WINDOW_AUTOSIZE );// Create a window for display.
+        imshow( "Display window", image );                   // Show our image inside it.
+        waitKey(0);
+
+                                                  // Wait for a keystroke in the window
+    */
+
+
+
+
     return 0;
 }
 
