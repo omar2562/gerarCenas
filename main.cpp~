@@ -6,7 +6,6 @@
 #include "Cena.h"
 #include <fstream>
 #include <math.h>
-#inlcude <stdlib.h>
 
 using namespace cv;
 using namespace std;
