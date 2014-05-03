@@ -106,11 +106,13 @@
 			<Add option="-fexceptions" />
 		</Compiler>
 		<Unit filename="include/Cena.h" />
+		<Unit filename="include/Quadro.h" />
 		<Unit filename="include/Tomada.h" />
 		<Unit filename="include/cuadKey.h" />
 		<Unit filename="include/readFil.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/Cena.cpp" />
+		<Unit filename="src/Quadro.cpp" />
 		<Unit filename="src/Tomada.cpp" />
 		<Unit filename="src/cuadKey.cpp" />
 		<Unit filename="src/readFil.cpp" />

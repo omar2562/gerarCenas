@@ -11,5 +11,5 @@ Tomada::~Tomada()
 }
 
 ostream& operator<<(ostream &strm, const Tomada &tomada) {
-  return strm << tomada.tomadaName <<":" << tomada.quadroClaveVector.size();
+  return strm << tomada.tomadaName <<":" << tomada.coherence;
 }

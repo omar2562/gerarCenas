@@ -3,6 +3,7 @@
 #include <cv.h>
 #include <iostream>
 #include <vector>
+#include "Quadro.h"
 
 using namespace std;
 using namespace cv;
@@ -16,39 +17,48 @@ public:
     {
         return tomadaName;
     }
+    void setCoherence(double val)
+    {
+        coherence = val;
+    }
+    double getCoherence()
+    {
+        return coherence;
+    }
     void setTomadaName(string name)
     {
         tomadaName = name;
     }
-    vector<string> getQuadrosNameVector()
+    vector<Quadro> getQuadroVector()
     {
-        return quadrosNameVector;
+        return quadroVector;
     }
-    void addQuadrosNameVector(string quadro)
+    void addQuadroVector(Quadro quadro)
     {
-        quadrosNameVector.push_back(quadro);
+        quadroVector.push_back(quadro);
     }
-    void setQuadrosNameVector(vector<string> vec)
+    void setQuadroVector(vector<Quadro> vec)
     {
-        quadrosNameVector = vec;
+        quadroVector = vec;
     }
-    vector<Mat> getQuadroClaveVector()
+    vector<Quadro> getQuadroClaveVector()
     {
         return quadroClaveVector;
     }
-    void addQuadroChave(Mat quadro)
+    void addQuadroChaveVector(Quadro quadro)
     {
         quadroClaveVector.push_back(quadro);
     }
-    void setQuadroClaveVector(vector<Mat>& vec)
+    void setQuadroClaveVector(vector<Quadro>& vec)
     {
         quadroClaveVector = vec;
     }
 protected:
 private:
     string tomadaName;
-    vector<string> quadrosNameVector;
-    vector<Mat> quadroClaveVector;
+    double coherence;
+    vector<Quadro> quadroVector;
+    vector<Quadro> quadroClaveVector;
     friend ostream& operator<<(ostream &strm, const Tomada &tomada);
 };
 
