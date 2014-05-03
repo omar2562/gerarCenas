@@ -57,7 +57,29 @@ int main( int argc, char** argv )
     vector<Cena>::iterator it;
     for (it=cenaVector.begin(); it<cenaVector.end(); it++)
         cout << ' ' << *it<< '\n';
-
+    //showCenas(cenaVector);
+    Mat image;
+    namedWindow( "Display window", WINDOW_AUTOSIZE );// Create a window for display.
+    for(int k =0; k<cenaVector.size(); k++)
+    {
+        Cena cena = cenaVector[k];
+        for(int i =0; i<cena.getTomadaVector().size(); i++)
+        {
+            Tomada t = cena.getTomadaVector()[i];
+            for(int j =0; j<t.getQuadroClaveVector().size(); j++)
+            {
+                Quadro q = t.getQuadroClaveVector()[j];
+                //cout << t.getTomadaName()+"/"q.getQuadroPath();
+                image = imread(t.getTomadaName()+"/"+q.getQuadroPath(),CV_LOAD_IMAGE_COLOR);
+                imshow( "Display window", image );
+                waitKey(0);
+            }
+        }
+        image = cv::Mat::zeros(250,250,CV_8UC3);
+        putText(image, "Cena "+k,cv::Point(50,50), CV_FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255),1,8,false);
+        imshow( "Display window", image );
+        waitKey(0);
+    }
     return 0;
 }
 
@@ -106,10 +128,15 @@ void findQuadroClaveForVector(vector<Tomada>& tomadaVector)
 void findQuadroClave(vector<Tomada>::iterator& tomada)
 {
     vector<Mat> histQuadro;
-    Quadro lastQuadro = tomada->getQuadroVector().back();
-    histQuadro = getVectorForQuadro(tomada->getTomadaName()+"/"+lastQuadro.getQuadroPath());
-    lastQuadro.setPlanoVector(histQuadro);
-    tomada->addQuadroChaveVector(lastQuadro);
+    Quadro quadro = tomada->getQuadroVector().front();
+    histQuadro = getVectorForQuadro(tomada->getTomadaName()+"/"+quadro.getQuadroPath());
+    quadro.setPlanoVector(histQuadro);
+    tomada->addQuadroChaveVector(quadro);
+
+    quadro = tomada->getQuadroVector().back();
+    histQuadro = getVectorForQuadro(tomada->getTomadaName()+"/"+quadro.getQuadroPath());
+    quadro.setPlanoVector(histQuadro);
+    tomada->addQuadroChaveVector(quadro);
 }
 
 void calculateCoherenceTomadas(vector<Tomada>& tomadaVector)
@@ -122,7 +149,7 @@ void calculateCoherenceTomadas(vector<Tomada>& tomadaVector)
         }
     }
     int max_k = NUM_TOMADA_CHECK,i=0;
-    double maxValue;
+    double maxValue,tm;
     vector<Tomada>::iterator it;
     for (it=tomadaVector.begin(); it<tomadaVector.end(); it++)
     {
@@ -137,7 +164,8 @@ void calculateCoherenceTomadas(vector<Tomada>& tomadaVector)
                 scComarations[i][k]=compareQuadroClave(tomadaVector[i],tomadaVector[k]);
                 scComarations[k][i]=scComarations[i][k];
             }
-            maxValue = min(maxValue,scComarations[i][k]);
+            tm = 1+(0.05*abs(max_k-(i-k)));
+            maxValue = min(maxValue,scComarations[i][k]*tm);
             if(k==i-1) k++;
         }
         it->setCoherence(maxValue);
