@@ -23,7 +23,7 @@ using namespace std;
 #define bins_sat 4
 
 
-vector<Tomada> getFilmInTomadas(string filmPath,string filmName);
+vector<Tomada> getFilmInTomadas(string filmPath);
 void findQuadroClaveForVector(vector<Tomada>& tomadaVector);
 void findQuadroClave(vector<Tomada>::iterator& tomada);
 vector<Cena> generateCenas(vector<Tomada>& tomadaVector);
@@ -32,109 +32,50 @@ vector<Mat> getVectorForQuadro(string quadroPath);
 int main( int argc, char** argv )
 {
 
-    readFil varfile;
+    string filmPath = "/media/New Volume/hachiko";
+    vector<Tomada> tomadaVector;
+    tomadaVector = getFilmInTomadas(filmPath);
+    cout<<"pasee 1"<<endl;
+    findQuadroClaveForVector(tomadaVector);
+    /*vector<Tomada>::iterator it2;
+    for (it2=tomadaVector.begin(); it2<tomadaVector.end(); it2++)
+        cout << ' ' << *it2<< '\n';*/
+    cout<<"pasee 2"<<endl;
+    vector<Cena> cenaVector;
 
-    vector<string> mainDir;
-
-    string direcname="/home/edson/Documentos/postgradacao/Fundamentos de Sistemas Multimídia (1º bimestre)/video/pirates2";
-
-    //vector de vector  de directorios
-    vector<vector<string> > dirmatrix(3000000,vector<string>());
-    //lectura de directorio inicial
-    varfile.readAllFil(direcname);
-
-    mainDir=varfile.getNameTomada();
-
-
-
-    //leer imagenes del directorio
-    for(int y=0; y<mainDir.size(); y++)
-    {
-        varfile.readAllFil(direcname+"/"+mainDir[y]);
-
-        dirmatrix[y]=varfile.getNameTomada();
-
-    }
-
-
-
-    //obtener imagenes clavves o representativas
-
-    cv::Mat imageBase;
-    cv::Mat test;
-    imageBase=imread("imagen1.jpg");
-    test=imread("imagentest.jpg");
-
-    cuadKey datapr;
-    datapr.compHist(imageBase,test,hue,bins_hue,sat,bins_sat);
-
-
-
-    /*  string filmPath = "/home/edson/Documentos/postgradacao/Fundamentos de Sistemas Multimídia (1º bimestre)/video/";
-      string filmName = "pirates2";
-      vector<Tomada> tomadaVector;
-      tomadaVector = getFilmInTomadas(filmPath,filmName);
-      cout<<"pasee 1"<<endl;
-      findQuadroClaveForVector(tomadaVector);
-      cout<<"pasee 2"<<endl;
-      vector<Cena> cenaVector;
-
-      cenaVector=generateCenas(tomadaVector);
-      cout<<"pasee 3"<<endl;
-      // -- Imprimir vecto
-      //cout << "myvector contains:\n";
-      vector<Cena>::iterator it;
-      for (it=cenaVector.begin(); it<cenaVector.end(); it++)
-          cout << ' ' << *it<< '\n';
-    */
-    //cout << "Numero de cenas: "<<cenaVector.size()<<"\n";
-    //*/
-    /*
-        Mat image;
-        image = imread("/home/edson/Documentos/postgradacao/Fundamentos de Sistemas Multimídia (1º bimestre)/video/lena.jpg", CV_LOAD_IMAGE_COLOR);   // Read the file
-
-        if(! image.data )                              // Check for invalid input
-        {
-            cout <<  "Could not open or find the image" << std::endl ;
-            return -1;
-        }
-        namedWindow( "Display window", WINDOW_AUTOSIZE );// Create a window for display.
-        imshow( "Display window", image );                   // Show our image inside it.
-        waitKey(0);
-
-                                                  // Wait for a keystroke in the window
-    */
-
-
-
+    cenaVector=generateCenas(tomadaVector);
+    cout<<"pasee 3"<<endl;
+    // -- Imprimir vecto
+    //cout << "myvector contains:\n";
+    vector<Cena>::iterator it;
+    for (it=cenaVector.begin(); it<cenaVector.end(); it++)
+        cout << ' ' << *it<< '\n';
 
     return 0;
 }
 
-vector<Tomada> getFilmInTomadas(string filmPath,string filmName)
+vector<Tomada> getFilmInTomadas(string filmPath)
 {
     vector<Tomada> tomadaVector;
-    string inFile = filmPath+filmName+"/"+filmName+".in";
-    ifstream myReadFile;
-    myReadFile.open(inFile.c_str());
-    string word;
-    if (myReadFile.is_open())
+
+    readFil varfile;
+
+    vector<string> mainDir;
+
+    //lectura de directorio inicial
+    varfile.readAllFil(filmPath);
+
+    mainDir=varfile.getNameTomada();
+
+    //leer imagenes del directorio
+    for(int y=0; y<mainDir.size(); y++)
     {
-        while (!myReadFile.eof())
-        {
-            Tomada tomada;
-            myReadFile >> word;
-            tomada.setPathTomada(filmPath+filmName+"/"+word);
-            tomada.setNumTomada(atoi(word.substr(7).c_str()));
-            myReadFile >> word;
-            tomada.setInitQuadro(atoi(word.c_str()));
-            myReadFile >> word;
-            tomada.setEndQuadro(atoi(word.c_str()));
-            //tomada.addQuadroChave(6);
-            tomadaVector.push_back(tomada);
-        }
+        Tomada tomada;
+        tomada.setTomadaName(filmPath+"/"+mainDir[y]);
+        varfile.readAllFil(filmPath+"/"+mainDir[y]);
+        tomada.setQuadrosNameVector(varfile.getNameTomada());
+        tomadaVector.push_back(tomada);
     }
-    myReadFile.close();
 
     return tomadaVector;
 }
@@ -150,10 +91,7 @@ void findQuadroClaveForVector(vector<Tomada>& tomadaVector)
 void findQuadroClave(vector<Tomada>::iterator& tomada)
 {
     vector<Mat> histQuadro;
-    stringstream ss;
-    ss.str("");
-    ss << setw(6) << setfill('0') << tomada->getEndQuadro();
-    histQuadro = getVectorForQuadro(tomada->getPathTomada() + "/" + ss.str() + ".jpg");
+    histQuadro = getVectorForQuadro(tomada->getTomadaName()+"/"+tomada->getQuadrosNameVector().back());
     tomada->setQuadroClaveVector(histQuadro);
 }
 
@@ -182,7 +120,7 @@ vector<Cena> generateCenas(vector<Tomada>& tomadaVector)
         g_compareQuadros = compareHist( tomada.getQuadroClaveVector()[1], (*it).getQuadroClaveVector()[1], method );
         b_compareQuadros = compareHist( tomada.getQuadroClaveVector()[2], (*it).getQuadroClaveVector()[2], method );
         compareQuadros = sqrt(pow(r_compareQuadros,2.0)+pow(g_compareQuadros,2.0)+pow(b_compareQuadros,2.0));
-        cout << tomada.getNumTomada() << " " << (*it).getNumTomada() << " " << compareQuadros << "\n";
+        //cout << tomada.getTomadaName() << " " << (*it).getTomadaName() << " " << compareQuadros << "\n";
         //if(abs(compareQuadros-compareQuadrosCena) == compareQuadros) compareQuadrosCena = compareQuadros;
         if(abs(compareQuadros-compareQuadrosCena) < DIF_MAX)
         {

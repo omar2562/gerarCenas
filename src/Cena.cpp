@@ -14,10 +14,10 @@ ostream& operator<<(ostream &strm, const Cena &cena)
 {
     vector<Tomada> tom;
     tom = cena.tomadaVector;
-    strm << "Cena(" << cena.tomadaVector.size() << ":";
+    strm << "Cena(" << cena.tomadaVector.size() << "\n";
     vector<Tomada>::iterator it;
     for (it=tom.begin(); it<tom.end(); it++)
-        strm << " " << (*it).getNumTomada()<< "," << (*it).getEndQuadro() << ";";
+        strm << " \t" << (*it) << ";\n";
     strm << ")\n";
     return strm;
 }

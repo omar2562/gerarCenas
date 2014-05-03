@@ -12,37 +12,25 @@ class Tomada
 public:
     Tomada();
     virtual ~Tomada();
-    int getInitQuadro()
+    string getTomadaName()
     {
-        return initQuadro;
+        return tomadaName;
     }
-    void setInitQuadro(int val)
+    void setTomadaName(string name)
     {
-        initQuadro = val;
+        tomadaName = name;
     }
-    int getEndQuadro()
+    vector<string> getQuadrosNameVector()
     {
-        return endQuadro;
+        return quadrosNameVector;
     }
-    void setEndQuadro(int val)
+    void addQuadrosNameVector(string quadro)
     {
-        endQuadro = val;
+        quadrosNameVector.push_back(quadro);
     }
-    int getNumTomada()
+    void setQuadrosNameVector(vector<string> vec)
     {
-        return numTomada;
-    }
-    void setNumTomada(int val)
-    {
-        numTomada = val;
-    }
-    string getPathTomada()
-    {
-        return pathTomada;
-    }
-    void setPathTomada(string val)
-    {
-        pathTomada = val;
+        quadrosNameVector = vec;
     }
     vector<Mat> getQuadroClaveVector()
     {
@@ -58,10 +46,8 @@ public:
     }
 protected:
 private:
-    int initQuadro;
-    int endQuadro;
-    int numTomada;
-    string pathTomada;
+    string tomadaName;
+    vector<string> quadrosNameVector;
     vector<Mat> quadroClaveVector;
     friend ostream& operator<<(ostream &strm, const Tomada &tomada);
 };

@@ -828,3 +828,66 @@
 	<cstring>
 	<algorithm>
 
+1399082008 source:/home/saasbook/Documents/tmp/gerarCenas/main.cpp
+	<opencv2/core/core.hpp>
+	<opencv2/highgui/highgui.hpp>
+	<iostream>
+	<cv.h>
+	"Tomada.h"
+	"Cena.h"
+	"readFil.h"
+	"cuadKey.h"
+	<fstream>
+	<math.h>
+	<dirent.h>
+
+1373456940 /home/saasbook/Downloads/opencv-2.4.6.1/include/opencv/cv.h
+	"opencv2/core/core_c.h"
+	"opencv2/core/core.hpp"
+	"opencv2/imgproc/imgproc_c.h"
+	"opencv2/imgproc/imgproc.hpp"
+	"opencv2/video/tracking.hpp"
+	"opencv2/features2d/features2d.hpp"
+	"opencv2/flann/flann.hpp"
+	"opencv2/calib3d/calib3d.hpp"
+	"opencv2/objdetect/objdetect.hpp"
+	"opencv2/legacy/compat.hpp"
+	"opencv2/core/internal.hpp"
+
+1399081930 /home/saasbook/Documents/tmp/gerarCenas/include/Tomada.h
+	<cv.h>
+	<iostream>
+	<vector>
+
+1399069638 /home/saasbook/Documents/tmp/gerarCenas/include/Cena.h
+	<iostream>
+	<vector>
+	"Tomada.h"
+
+1399069638 /home/saasbook/Documents/tmp/gerarCenas/include/readFil.h
+	<iostream>
+	<vector>
+	<dirent.h>
+
+1399069638 /home/saasbook/Documents/tmp/gerarCenas/include/cuadKey.h
+	"opencv/cv.h"
+	"readFil.h"
+
+1399082070 source:/home/saasbook/Documents/tmp/gerarCenas/src/Cena.cpp
+	"Cena.h"
+	<vector>
+
+1399081707 source:/home/saasbook/Documents/tmp/gerarCenas/src/Tomada.cpp
+	"Tomada.h"
+
+1399069638 source:/home/saasbook/Documents/tmp/gerarCenas/src/cuadKey.cpp
+	"cuadKey.h"
+
+1399069638 source:/home/saasbook/Documents/tmp/gerarCenas/src/readFil.cpp
+	"readFil.h"
+	<vector>
+	<stdio.h>
+	<stdlib.h>
+	<cstring>
+	<algorithm>
+
