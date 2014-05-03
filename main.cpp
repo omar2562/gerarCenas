@@ -127,14 +127,18 @@ void calculateCoherenceTomadas(vector<Tomada>& tomadaVector)
     for (it=tomadaVector.begin(); it<tomadaVector.end(); it++)
     {
         maxValue = INFINITY;
-        for(int k = 1 ; k<=max_k && i+k < tomadaVector.size(); k++)
+        int k = i-max_k<0?0:i-max_k;
+        k = i==0?1:k;
+        for( ; k<=i+max_k && k < tomadaVector.size(); k++)
         {
+            //cout << i << "," <<k<<"," <<tomadaVector.size()<<"\n";
             if(scComarations[i][k] == -1)
             {
-                scComarations[i][k]=compareQuadroClave(tomadaVector[i],tomadaVector[i+k]);
+                scComarations[i][k]=compareQuadroClave(tomadaVector[i],tomadaVector[k]);
                 scComarations[k][i]=scComarations[i][k];
             }
             maxValue = min(maxValue,scComarations[i][k]);
+            if(k==i-1) k++;
         }
         it->setCoherence(maxValue);
         i++;
