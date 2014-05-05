@@ -42,8 +42,8 @@ void joinCenas(vector<Cena>& cenaVector,int i,bool fusionDer);
 
 int main( int argc, char** argv )
 {
-    bool showImages = false;
-    string filmPath = "c:/Users/Omar/Documents/FMI Resources/hachiko2";
+    bool showImages = true;
+    string filmPath = "/media/New Volume/hachiko";
     vector<Tomada> tomadaVector;
     tomadaVector = getFilmInTomadas(filmPath);
     cout<<"pasee 1"<<endl;
@@ -68,22 +68,21 @@ int main( int argc, char** argv )
         cout << ' ' << *it<< '\n';*/
     //showCenas(cenaVector);
     ofstream myfile;
-    myfile.open ("c:/Users/Omar/Documents/FMI Resources/hachiko2.xml");
+    myfile.open ("/media/New Volume/hachiko.xml");
     Mat image;
     namedWindow( "Display window", WINDOW_AUTOSIZE );// Create a window for display.
     for(int k =0; k<cenaVector.size(); k++)
     {
         Cena cena = cenaVector[k];
         myfile << "<Scene id=\"" << k << "\">\n";
-        String str2 = cena.getTomadaVector().front().getTomadaName();
-        str2 = str2.substr (str2.size()-4,4);
-        myfile << "<Shot_Ini id=\"" << atoi(str2.c_str()) << "\"/>\n";
-        str2 = cena.getTomadaVector().back().getTomadaName();
-        str2 = str2.substr (str2.size()-4,4);
-        myfile << "<Shot_End id=\"" << atoi(str2.c_str()) << "\"/>\n";
+
+        string maxS,minS;
+        maxS = minS = cena.getTomadaVector().front().getTomadaName();
         for(int i =0; i<cena.getTomadaVector().size(); i++)
         {
             Tomada t = cena.getTomadaVector()[i];
+            maxS = maxS.compare(t.getTomadaName())>0?maxS:t.getTomadaName();
+            minS = minS.compare(t.getTomadaName())<0?minS:t.getTomadaName();
             for(int j =0; j<t.getQuadroClaveVector().size(); j++)
             {
                 Quadro q = t.getQuadroClaveVector()[j];
@@ -96,6 +95,12 @@ int main( int argc, char** argv )
                 }
             }
         }
+        String str2 = minS;
+        str2 = str2.substr (str2.size()-4,4);
+        myfile << "<Shot_Ini id=\"" << atoi(str2.c_str()) << "\"/>\n";
+        str2 = maxS;
+        str2 = str2.substr (str2.size()-4,4);
+        myfile << "<Shot_End id=\"" << atoi(str2.c_str()) << "\"/>\n";
         if(showImages)
         {
             image = cv::Mat::zeros(250,250,CV_8UC3);
@@ -354,7 +359,12 @@ void removeCenasMinusculas(vector<Cena>& cenaVector)
                 fusionDer = false;
             if(minCa == INFINITY) fusionDer = true;
             if(minCp == INFINITY) fusionDer = false;
-            if(fusionDer && ) it++;
+            if(fusionDer && cenaVector[i].getTomadaVector().size() == 1) {
+                    cout << "=================>" << i<<"\n";
+                    it++;
+                    i++;
+
+            }
             joinCenas(cenaVector,i,fusionDer);
 
         }
@@ -368,14 +378,8 @@ void joinCenas(vector<Cena>& cenaVector,int i,bool fusionDer)
     Tomada tomada;
     tomada = cena.getTomadaVector().at(0);
     Cena cenaD = cenaVector[j];
-    vector<Tomada>::iterator it = cenaD.getTomadaVector().begin();
     cout << cenaD.getTomadaVector().size() << " ";
-    /*if(!fusionDer) cenaD.addTomada(tomada);
-    else
-    {
-        cenaD.getTomadaVector().insert(it,tomada);
-        it--;
-    }*/
+    cenaVector[j].addTomada(tomada);
     cout << cenaD.getTomadaVector().size() << " " << i << " " << j <<endl;
-    //cenaVector.erase(cenaVector.begin()+i);
+    cenaVector.erase(cenaVector.begin()+i);
 }
