@@ -17,9 +17,9 @@
 using namespace cv;
 using namespace std;
 
-#define NUM_TOMADA_CHECK 3
+#define NUM_TOMADA_CHECK 5
 #define DIF_MAX 1.0
-#define MAX_VALUE 10000
+#define MAX_VALUE 3000
 #define PERCENTAGE_CHANGE 0.85
 //valores segun paper de thiago , falta experimentar
 #define hue 180
@@ -28,19 +28,22 @@ using namespace std;
 #define bins_sat 4
 
 double scComarations[MAX_VALUE][MAX_VALUE];
+double scComarationsFull[MAX_VALUE][MAX_VALUE][3];
 
 vector<Tomada> getFilmInTomadas(string filmPath);
 void findQuadroClaveForVector(vector<Tomada>& tomadaVector);
 void findQuadroClave(vector<Tomada>::iterator& tomada);
 vector<Cena> generateCenas(vector<Tomada>& tomadaVector);
 vector<Mat> getVectorForQuadro(string quadroPath);
-double compareQuadroClave(Tomada tomada1,Tomada tomada2);
+double compareQuadroClave(Tomada tomada1,Tomada tomada2,int i,int j);
 void calculateCoherenceTomadas(vector<Tomada>& tomadaVector);
+void removeCenasMinusculas(vector<Cena>& cenaVector);
+void joinCenas(vector<Cena>& cenaVector,int i,bool fusionDer);
 
 int main( int argc, char** argv )
 {
-
-    string filmPath = "/media/New Volume/hachiko";
+    bool showImages = false;
+    string filmPath = "c:/Users/Omar/Documents/FMI Resources/hachiko2";
     vector<Tomada> tomadaVector;
     tomadaVector = getFilmInTomadas(filmPath);
     cout<<"pasee 1"<<endl;
@@ -49,19 +52,23 @@ int main( int argc, char** argv )
     calculateCoherenceTomadas(tomadaVector);
     cout<<"pasee 3"<<endl;
     vector<Tomada>::iterator it2;
-    for (it2=tomadaVector.begin(); it2<tomadaVector.end(); it2++)
-        cout << ' ' << *it2<< '\n';
+    /*for (it2=tomadaVector.begin(); it2<tomadaVector.end(); it2++)
+        cout << ' ' << *it2<< '\n';*/
     vector<Cena> cenaVector;
     cenaVector=generateCenas(tomadaVector);
     cout<<"pasee 4"<<endl;
+    cout << cenaVector.size() << endl;
+    removeCenasMinusculas(cenaVector);
+    cout << cenaVector.size() << endl;
+    cout<<"pasee 5"<<endl;
     // -- Imprimir vecto
     //cout << "myvector contains:\n";
     vector<Cena>::iterator it;
-    for (it=cenaVector.begin(); it<cenaVector.end(); it++)
-        cout << ' ' << *it<< '\n';
+    /*for (it=cenaVector.begin(); it<cenaVector.end(); it++)
+        cout << ' ' << *it<< '\n';*/
     //showCenas(cenaVector);
     ofstream myfile;
-    myfile.open ("film.xml");
+    myfile.open ("c:/Users/Omar/Documents/FMI Resources/hachiko2.xml");
     Mat image;
     namedWindow( "Display window", WINDOW_AUTOSIZE );// Create a window for display.
     for(int k =0; k<cenaVector.size(); k++)
@@ -81,15 +88,21 @@ int main( int argc, char** argv )
             {
                 Quadro q = t.getQuadroClaveVector()[j];
                 //cout << t.getTomadaName()+"/"q.getQuadroPath();
-                /*image = imread(t.getTomadaName()+"/"+q.getQuadroPath(),CV_LOAD_IMAGE_COLOR);
-                imshow( "Display window", image );
-                waitKey(0);*/
+                if(showImages)
+                {
+                    image = imread(t.getTomadaName()+"/"+q.getQuadroPath(),CV_LOAD_IMAGE_COLOR);
+                    imshow( "Display window", image );
+                    waitKey(0);
+                }
             }
         }
-        /*image = cv::Mat::zeros(250,250,CV_8UC3);
-        putText(image, "Cena "+k,cv::Point(50,50), CV_FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255),1,8,false);
-        imshow( "Display window", image );
-        waitKey(0);*/
+        if(showImages)
+        {
+            image = cv::Mat::zeros(250,250,CV_8UC3);
+            putText(image, "Cena "+k,cv::Point(50,50), CV_FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255),1,8,false);
+            imshow( "Display window", image );
+            waitKey(0);
+        }
         myfile << "</Scene>\n";
     }
     myfile.close();
@@ -159,6 +172,9 @@ void calculateCoherenceTomadas(vector<Tomada>& tomadaVector)
         for(int j = 0 ; j< MAX_VALUE; j++)
         {
             scComarations[i][j] = -1;
+            scComarationsFull[i][j][0] = -1;
+            scComarationsFull[i][j][1] = -1;
+            scComarationsFull[i][j][2] = -1;
         }
     }
     int max_k = NUM_TOMADA_CHECK,i=0;
@@ -169,15 +185,15 @@ void calculateCoherenceTomadas(vector<Tomada>& tomadaVector)
         maxValue = INFINITY;
         int k = i-max_k<0?0:i-max_k;
         k = i==0?1:k;
-        for( ; k<=i+max_k && k < tomadaVector.size(); k++)
+        for( ; k<=i/*+max_k*/ && k < tomadaVector.size(); k++)
         {
             //cout << i << "," <<k<<"," <<tomadaVector.size()<<"\n";
             if(scComarations[i][k] == -1)
             {
-                scComarations[i][k]=compareQuadroClave(tomadaVector[i],tomadaVector[k]);
+                scComarations[i][k]=compareQuadroClave(tomadaVector[i],tomadaVector[k],i,k);
                 scComarations[k][i]=scComarations[i][k];
             }
-            tm = 1+(0.05*abs(max_k-(i-k)));
+            tm = 1+(0.05*(max_k-abs(i-k)));
             maxValue = min(maxValue,scComarations[i][k]*tm);
             if(k==i-1) k++;
         }
@@ -252,7 +268,7 @@ vector<Mat> getVectorForQuadro(string quadroPath)
     vect.push_back(b_hist);
     return vect;
 }
-double compareQuadroClave(Tomada tomada1,Tomada tomada2) //BSC tecnic
+double compareQuadroClave(Tomada tomada1,Tomada tomada2,int a,int b) //BSC tecnic
 {
     double compareQuadros,maxCompareQuadros,compareQuadros_0;
     int method = CV_COMP_CORREL;
@@ -264,7 +280,9 @@ double compareQuadroClave(Tomada tomada1,Tomada tomada2) //BSC tecnic
     g_compareQuadros = compareHist( tomada.getQuadroClaveVector()[1], (*it).getQuadroClaveVector()[1], method );
     b_compareQuadros = compareHist( tomada.getQuadroClaveVector()[2], (*it).getQuadroClaveVector()[2], method );
     compareQuadros = sqrt(pow(r_compareQuadros,2.0)+pow(g_compareQuadros,2.0)+pow(b_compareQuadros,2.0));*/
-    maxCompareQuadros = INFINITY;
+    double minCompareQuadros = INFINITY;
+    maxCompareQuadros = -1*INFINITY;
+    double medCompareQuadros = 0;
     for(int i = 0; i<tomada1.getQuadroClaveVector().size(); i++)
     {
         for(int j = 0; j<tomada2.getQuadroClaveVector().size(); j++)
@@ -276,7 +294,88 @@ double compareQuadroClave(Tomada tomada1,Tomada tomada2) //BSC tecnic
             }
             compareQuadros = sqrt(compareQuadros);
         }
-        maxCompareQuadros = min(maxCompareQuadros,compareQuadros);
+        minCompareQuadros = min(minCompareQuadros,compareQuadros);
+        maxCompareQuadros = max(maxCompareQuadros,compareQuadros);
+        medCompareQuadros += compareQuadros;
     }
-    return maxCompareQuadros;
+    scComarationsFull[a][b][0] = minCompareQuadros;
+    scComarationsFull[a][b][1] = maxCompareQuadros;
+    scComarationsFull[a][b][2] = medCompareQuadros/(tomada1.getQuadroClaveVector().size() * tomada2.getQuadroClaveVector().size());
+    scComarationsFull[b][a][0] = scComarationsFull[a][b][0];
+    scComarationsFull[b][a][1] = scComarationsFull[a][b][1];
+    scComarationsFull[b][a][2] = scComarationsFull[a][b][2];
+    return minCompareQuadros;
+}
+
+void removeCenasMinusculas(vector<Cena>& cenaVector)
+{
+    vector<Cena>::iterator it;
+    int i = 0;
+    for (it=cenaVector.begin(); it<cenaVector.end(); it++)
+    {
+        Cena cena = *it;
+        if(cena.getTomadaVector().size() == 1)
+        {
+            int k = i-1;
+            double maxCa=-1*INFINITY,minCa=INFINITY,medCa=0;
+            double maxCp=-1*INFINITY,minCp=INFINITY,medCp=0;
+            int cnt = 0;
+            bool fusionDer = true;
+            Tomada tomada1,tomada2;
+            if(k>=0)
+            {
+                if(scComarations[i][k] == -1)
+                {
+                    scComarations[i][k]=compareQuadroClave(cena.getTomadaVector()[i],cena.getTomadaVector()[k],i,k);
+                    scComarations[k][i]=scComarations[i][k];
+                }
+                minCa = scComarationsFull[i][k][0];
+                maxCa = scComarationsFull[i][k][1];
+                medCa = scComarationsFull[i][k][2];
+            }
+            k = i+1;
+            if(k<cenaVector.size())
+            {
+                if(scComarations[i][k] == -1)
+                {
+                    scComarations[i][k]=compareQuadroClave(cena.getTomadaVector()[i],cena.getTomadaVector()[k],i,k);
+                    scComarations[k][i]=scComarations[i][k];
+                }
+                minCp = scComarationsFull[i][k][0];
+                maxCp = scComarationsFull[i][k][1];
+                medCp = scComarationsFull[i][k][2];
+            }
+            //reglas
+            if(maxCa>=maxCp && medCa>=medCp)
+                fusionDer = false;
+            if(fusionDer || maxCp>=maxCa*1.2)
+                fusionDer = false;
+            if(fusionDer || minCa>=minCp*1.1)
+                fusionDer = false;
+            if(minCa == INFINITY) fusionDer = true;
+            if(minCp == INFINITY) fusionDer = false;
+            if(fusionDer && ) it++;
+            joinCenas(cenaVector,i,fusionDer);
+
+        }
+        i++;
+    }
+}
+void joinCenas(vector<Cena>& cenaVector,int i,bool fusionDer)
+{
+    int j = fusionDer?i+1:i-1;
+    Cena cena = cenaVector[i];
+    Tomada tomada;
+    tomada = cena.getTomadaVector().at(0);
+    Cena cenaD = cenaVector[j];
+    vector<Tomada>::iterator it = cenaD.getTomadaVector().begin();
+    cout << cenaD.getTomadaVector().size() << " ";
+    /*if(!fusionDer) cenaD.addTomada(tomada);
+    else
+    {
+        cenaD.getTomadaVector().insert(it,tomada);
+        it--;
+    }*/
+    cout << cenaD.getTomadaVector().size() << " " << i << " " << j <<endl;
+    //cenaVector.erase(cenaVector.begin()+i);
 }
