@@ -1,7 +1,9 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <iostream>
+#include <fstream>
 #include <cv.h>
+#include <stdlib.h>
 
 #include "Quadro.h"
 #include "Tomada.h"
@@ -58,11 +60,20 @@ int main( int argc, char** argv )
     for (it=cenaVector.begin(); it<cenaVector.end(); it++)
         cout << ' ' << *it<< '\n';
     //showCenas(cenaVector);
+    ofstream myfile;
+    myfile.open ("film.xml");
     Mat image;
     namedWindow( "Display window", WINDOW_AUTOSIZE );// Create a window for display.
     for(int k =0; k<cenaVector.size(); k++)
     {
         Cena cena = cenaVector[k];
+        myfile << "<Scene id=\"" << k << "\">\n";
+        String str2 = cena.getTomadaVector().front().getTomadaName();
+        str2 = str2.substr (str2.size()-4,4);
+        myfile << "<Shot_Ini id=\"" << atoi(str2.c_str()) << "\"/>\n";
+        str2 = cena.getTomadaVector().back().getTomadaName();
+        str2 = str2.substr (str2.size()-4,4);
+        myfile << "<Shot_End id=\"" << atoi(str2.c_str()) << "\"/>\n";
         for(int i =0; i<cena.getTomadaVector().size(); i++)
         {
             Tomada t = cena.getTomadaVector()[i];
@@ -70,16 +81,18 @@ int main( int argc, char** argv )
             {
                 Quadro q = t.getQuadroClaveVector()[j];
                 //cout << t.getTomadaName()+"/"q.getQuadroPath();
-                image = imread(t.getTomadaName()+"/"+q.getQuadroPath(),CV_LOAD_IMAGE_COLOR);
+                /*image = imread(t.getTomadaName()+"/"+q.getQuadroPath(),CV_LOAD_IMAGE_COLOR);
                 imshow( "Display window", image );
-                waitKey(0);
+                waitKey(0);*/
             }
         }
-        image = cv::Mat::zeros(250,250,CV_8UC3);
+        /*image = cv::Mat::zeros(250,250,CV_8UC3);
         putText(image, "Cena "+k,cv::Point(50,50), CV_FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255),1,8,false);
         imshow( "Display window", image );
-        waitKey(0);
+        waitKey(0);*/
+        myfile << "</Scene>\n";
     }
+    myfile.close();
     return 0;
 }
 

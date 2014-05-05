@@ -828,11 +828,13 @@
 	<cstring>
 	<algorithm>
 
-1399142131 source:/home/saasbook/Documents/tmp/gerarCenas/main.cpp
+1399241510 source:/home/saasbook/Documents/tmp/gerarCenas/main.cpp
 	<opencv2/core/core.hpp>
 	<opencv2/highgui/highgui.hpp>
 	<iostream>
+	<fstream>
 	<cv.h>
+	<stdlib.h>
 	"Quadro.h"
 	"Tomada.h"
 	"Cena.h"
