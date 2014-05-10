@@ -26,13 +26,27 @@ using namespace std;
 #define sat 256
 #define bins_hue 8
 #define bins_sat 4
+#define alpha 0.90
+
+template<typename T>
+ostream& operator<< (ostream& out, const vector<T> v) {
+    int last = v.size() - 1;
+    out << "[";
+    for(int i = 0; i < last; i++)
+        out << v[i] << ", ";
+    out << v[last] << "]";
+    return out;
+}
+
+
+
 
 double scComarations[MAX_VALUE][MAX_VALUE];
 double scComarationsFull[MAX_VALUE][MAX_VALUE][3];
 
 vector<Tomada> getFilmInTomadas(string filmPath);
-void findQuadroClaveForVector(vector<Tomada>& tomadaVector);
-void findQuadroClave(vector<Tomada>::iterator& tomada);
+void findQuadroClaveForVector(vector<Tomada>& tomadaVector,vector<vector<int> > keyframes);
+void findQuadroClave(vector<Tomada>::iterator& tomada, vector<int> keys);
 vector<Cena> generateCenas(vector<Tomada>& tomadaVector);
 vector<Mat> getVectorForQuadro(string quadroPath);
 double compareQuadroClave(Tomada tomada1,Tomada tomada2,int i,int j);
@@ -42,12 +56,113 @@ void joinCenas(vector<Cena>& cenaVector,int i,bool fusionDer);
 
 int main( int argc, char** argv )
 {
+
+    readFil varfile;
+    vector<string> mainDir;
+    string direcname="c:/Users/Omar/Documents/FMI Resources/hachiko";
+    string direcnamef="c:/Users/Omar/Documents/FMI Resources/hachiko_carac";
+    string direcnames="c:/Users/Omar/Documents/FMI Resources/hachiko_singularvalue";
+    //vector de vector  de directorios
+    vector<vector<string> > dirmatrix(3000000,vector<string>());
+    //lectura de directorio inicial
+    varfile.readAllFil(direcname);
+    mainDir=varfile.getNameTomada();
+    //leer imagenes del directorio
+    for(int y=0; y<mainDir.size(); y++)
+    {
+        varfile.readAllFil(direcname+"/"+mainDir[y]);
+        dirmatrix[y]=varfile.getNameTomada();
+    }
+    vector<vector<int> > keyFramesvector;
+    //cout<<dirmatrix[0]<<endl;
+
+cuadKey datapr;
+vector <int> numKeyframes;
+//cout<<"tamañno de matriz"<<dirmatrix.size()<<endl;
+for(int oo=0;oo<1167;oo++){
+    vector<int> vect;
+    Mat a(dirmatrix[oo].size(),datapr.sizefeatures,CV_32FC1,Scalar::all(0));
+    string pathh=direcnamef+"/"+mainDir[oo]+".txt";
+    string pathh2=direcnames+"/"+mainDir[oo]+".txt";
+
+    datapr.getRankfromFile(dirmatrix[oo],pathh,a);
+
+    Mat A, w, u, vt;
+    SVD::compute(a, w, u, vt);
+    std::ofstream file_out(pathh2.c_str(),std::ofstream::out);
+    //cout << w << "\n";
+    //printf("matrix W columna =%d , fila=%d\n",w.cols,w.rows);
+    //printf("matrix U columna =%d , fila=%d\n",u.cols,u.rows);
+    //printf("matrix VT columna =%d , fila=%d\n",vt.cols,vt.rows);
+    float val=0.0;
+    float val2=0.0;
+    int countKeyFrame=0;
+    int h=std::min(a.cols,a.rows);
+    int k=h;
+    for(int ii=0;ii<h;ii++)
+    {
+        val+=pow(w.at<float>(ii,1),2);
+    }
+   // cout<<"---------tomada "<<oo<<"--numero de frames --"<<a.rows<<endl;
+    for(int uu=0;uu<k;uu++){
+    for(int ii=0;ii<uu;ii++)
+    {
+        val2+=pow(w.at<float>(ii,1),2);
+    }
+            float vall=sqrt(val2)/sqrt(val);
+            file_out<<uu<<" ";
+            //printf("valor de %d cuadros claves = %f \n",uu,vall);
+            file_out<<vall<<endl;
+
+            if(vall>alpha && vall<1.0){countKeyFrame++;}
+
+
+            val2=0;
+    }
+
+   // printf("valor de %d cuadros claves en tomada \n",countKeyFrame);
+   numKeyframes.push_back(countKeyFrame);
+
+   //cout<<numKeyframes.size()<<endl;
+
+    //cout<<"key-frames"<<numKeyframes[oo]<<endl;
+    string pp=direcname+"/"+mainDir[oo];
+    //datapr.getKeyFrames(dirmatrix[oo],numKeyframes[oo],pp,vect);
+    datapr.getKeyFrames2(a,numKeyframes[oo],vect);
+    //cout<<"salliio"<<endl;
+
+    val=0;
+
+    file_out.close();
+    //cout<<vect<<endl;
+    keyFramesvector.push_back(vect);
+    cout<<"tomada : "<<oo<<endl;
+    cout<<keyFramesvector[oo]<<endl;
+}
+
+//cout<<"numero de tomadas : "<<keyFramesvector.size()<<endl;
+
+
+
+
+
+
+
+
+
+/*********************************************************************************
+*/
+
+
+
     bool showImages = true;
-    string filmPath = "/media/New Volume/hachiko";
+    string filmPath = "c:/Users/Omar/Documents/FMI Resources/hachiko";
+
     vector<Tomada> tomadaVector;
     tomadaVector = getFilmInTomadas(filmPath);
+
     cout<<"pasee 1"<<endl;
-    findQuadroClaveForVector(tomadaVector);
+    findQuadroClaveForVector(tomadaVector,keyFramesvector);
     cout<<"pasee 2"<<endl;
     calculateCoherenceTomadas(tomadaVector);
     cout<<"pasee 3"<<endl;
@@ -68,7 +183,7 @@ int main( int argc, char** argv )
         cout << ' ' << *it<< '\n';*/
     //showCenas(cenaVector);
     ofstream myfile;
-    myfile.open ("/media/New Volume/hachiko.xml");
+    myfile.open ("c:/Users/Omar/Documents/FMI Resources/hachiko_p.xml");
     Mat image;
     namedWindow( "Display window", WINDOW_AUTOSIZE );// Create a window for display.
     for(int k =0; k<cenaVector.size(); k++)
@@ -137,6 +252,7 @@ vector<Tomada> getFilmInTomadas(string filmPath)
         vector<String> quadroNameVector = varfile.getNameTomada();
         for (int i=0; i<quadroNameVector.size(); i++)
         {
+
             Quadro quadro;
             quadro.setQuadroPath(quadroNameVector[i]);
             quadroVector.push_back(quadro);
@@ -148,18 +264,31 @@ vector<Tomada> getFilmInTomadas(string filmPath)
     return tomadaVector;
 }
 
-void findQuadroClaveForVector(vector<Tomada>& tomadaVector)
+void findQuadroClaveForVector(vector<Tomada>& tomadaVector,vector<vector<int> > keyframes)
 {
     vector<Tomada>::iterator it;
+    int i=0;
     for (it=tomadaVector.begin(); it<tomadaVector.end(); it++)
     {
-        findQuadroClave(it);
+        findQuadroClave(it,keyframes[i]);
+        i++;
     }
 }
-void findQuadroClave(vector<Tomada>::iterator& tomada)
+void findQuadroClave(vector<Tomada>::iterator& tomada,vector<int> keys)
 {
     vector<Mat> histQuadro;
+    for(int ii=0;ii<keys.size();ii++)
+    {
+            Quadro quadro = tomada->getQuadroVector()[ii];
+
+            histQuadro = getVectorForQuadro(tomada->getTomadaName()+"/"+quadro.getQuadroPath());
+            quadro.setPlanoVector(histQuadro);
+            tomada->addQuadroChaveVector(quadro);
+
+    }
+/*
     Quadro quadro = tomada->getQuadroVector().front();
+
     histQuadro = getVectorForQuadro(tomada->getTomadaName()+"/"+quadro.getQuadroPath());
     quadro.setPlanoVector(histQuadro);
     tomada->addQuadroChaveVector(quadro);
@@ -167,7 +296,7 @@ void findQuadroClave(vector<Tomada>::iterator& tomada)
     quadro = tomada->getQuadroVector().back();
     histQuadro = getVectorForQuadro(tomada->getTomadaName()+"/"+quadro.getQuadroPath());
     quadro.setPlanoVector(histQuadro);
-    tomada->addQuadroChaveVector(quadro);
+    tomada->addQuadroChaveVector(quadro);*/
 }
 
 void calculateCoherenceTomadas(vector<Tomada>& tomadaVector)

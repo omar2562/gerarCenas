@@ -903,3 +903,139 @@
 1399126388 source:/home/saasbook/Documents/tmp/gerarCenas/src/Quadro.cpp
 	"Quadro.h"
 
+1399398635 source:/home/edson/multimidiarepo4/gerarCenas/main.cpp
+	<opencv2/core/core.hpp>
+	<opencv2/highgui/highgui.hpp>
+	<iostream>
+	<fstream>
+	<cv.h>
+	<stdlib.h>
+	"Quadro.h"
+	"Tomada.h"
+	"Cena.h"
+	"readFil.h"
+	"cuadKey.h"
+	<fstream>
+	<math.h>
+	<dirent.h>
+
+1399365600 /home/edson/multimidiarepo4/gerarCenas/include/Quadro.h
+	<cv.h>
+	<iostream>
+	<vector>
+
+1399397370 /home/edson/multimidiarepo4/gerarCenas/include/Tomada.h
+	<cv.h>
+	<iostream>
+	<vector>
+	"Quadro.h"
+	"cuadKey.h"
+
+1399398521 /home/edson/multimidiarepo4/gerarCenas/include/cuadKey.h
+	"opencv/cv.h"
+	"readFil.h"
+
+1399365600 /home/edson/multimidiarepo4/gerarCenas/include/readFil.h
+	<iostream>
+	<vector>
+	<dirent.h>
+
+1399365600 /home/edson/multimidiarepo4/gerarCenas/include/Cena.h
+	<iostream>
+	<vector>
+	"Tomada.h"
+
+1399365600 source:/home/edson/multimidiarepo4/gerarCenas/src/Cena.cpp
+	"Cena.h"
+	<vector>
+
+1399365600 source:/home/edson/multimidiarepo4/gerarCenas/src/Quadro.cpp
+	"Quadro.h"
+
+1399365600 source:/home/edson/multimidiarepo4/gerarCenas/src/Tomada.cpp
+	"Tomada.h"
+
+1399398763 source:/home/edson/multimidiarepo4/gerarCenas/src/cuadKey.cpp
+	"cuadKey.h"
+	<opencv2/core/core.hpp>
+	<opencv2/highgui/highgui.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<fstream>
+	<sstream>
+
+1399365600 source:/home/edson/multimidiarepo4/gerarCenas/src/readFil.cpp
+	"readFil.h"
+	<vector>
+	<stdio.h>
+	<stdlib.h>
+	<cstring>
+	<algorithm>
+
+1399405238 source:e:\mestrado\fmi\edson\multimidiarepo4\gerarcenas\main.cpp
+	<opencv2/core/core.hpp>
+	<opencv2/highgui/highgui.hpp>
+	<iostream>
+	<fstream>
+	<cv.h>
+	<stdlib.h>
+	"Quadro.h"
+	"Tomada.h"
+	"Cena.h"
+	"readFil.h"
+	"cuadKey.h"
+	<fstream>
+	<math.h>
+	<dirent.h>
+
+1399358400 e:\mestrado\fmi\edson\multimidiarepo4\gerarcenas\include\quadro.h
+	<cv.h>
+	<iostream>
+	<vector>
+
+1399390170 e:\mestrado\fmi\edson\multimidiarepo4\gerarcenas\include\tomada.h
+	<cv.h>
+	<iostream>
+	<vector>
+	"Quadro.h"
+	"cuadKey.h"
+
+1399391320 e:\mestrado\fmi\edson\multimidiarepo4\gerarcenas\include\cuadkey.h
+	"opencv/cv.h"
+	"readFil.h"
+
+1399358400 e:\mestrado\fmi\edson\multimidiarepo4\gerarcenas\include\readfil.h
+	<iostream>
+	<vector>
+	<dirent.h>
+
+1399358400 e:\mestrado\fmi\edson\multimidiarepo4\gerarcenas\include\cena.h
+	<iostream>
+	<vector>
+	"Tomada.h"
+
+1399358400 source:e:\mestrado\fmi\edson\multimidiarepo4\gerarcenas\src\cena.cpp
+	"Cena.h"
+	<vector>
+
+1399391562 source:e:\mestrado\fmi\edson\multimidiarepo4\gerarcenas\src\cuadkey.cpp
+	"cuadKey.h"
+	<opencv2/core/core.hpp>
+	<opencv2/highgui/highgui.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<fstream>
+	<sstream>
+
+1399358400 source:e:\mestrado\fmi\edson\multimidiarepo4\gerarcenas\src\quadro.cpp
+	"Quadro.h"
+
+1399358400 source:e:\mestrado\fmi\edson\multimidiarepo4\gerarcenas\src\readfil.cpp
+	"readFil.h"
+	<vector>
+	<stdio.h>
+	<stdlib.h>
+	<cstring>
+	<algorithm>
+
+1399358400 source:e:\mestrado\fmi\edson\multimidiarepo4\gerarcenas\src\tomada.cpp
+	"Tomada.h"
+

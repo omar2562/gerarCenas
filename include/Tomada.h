@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include "Quadro.h"
+#include "cuadKey.h"
 
 using namespace std;
 using namespace cv;
@@ -59,6 +60,7 @@ private:
     double coherence;
     vector<Quadro> quadroVector;
     vector<Quadro> quadroClaveVector;
+    cuadKey keyframes;
     friend ostream& operator<<(ostream &strm, const Tomada &tomada);
 };
 
